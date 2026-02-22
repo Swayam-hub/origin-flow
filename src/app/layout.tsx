@@ -5,6 +5,9 @@ import { Inter } from 'next/font/google'
 
 import Background from '@/components/global/Background'
 import { Header } from '@/components/global/Header'
+import GlobalLoader from '@/components/global/loader/GlobalLoader'
+import RouteLoader from '@/components/global/loader/RouteLoader'
+import Toaster from '@/components/global/Toaster'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -22,7 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} bg-zinc-950 text-zinc-100`}>
+      <body className={`${inter.className} bg-background text-foreground`}>
+        <RouteLoader />
+        <GlobalLoader />
+        <Toaster />
         <div className="min-h-screen flex flex-col">
           {/* <Background /> */}
           <div className="fixed inset-0 -z-10">

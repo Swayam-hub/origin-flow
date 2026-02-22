@@ -1,24 +1,61 @@
-"use client";
+'use client'
 
-import { motion } from "framer-motion";
-import { useActionState, useEffect, useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
-import { loginAction, type LoginState } from "@/actions/auth.action";
-import { useRouter } from "next/navigation";
-import Input from "../ui/FloatingInput";
-import Button from "../ui/Button";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { motion } from 'framer-motion'
+import { Eye, EyeOff } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useActionState, useEffect, useState, useTransition } from 'react'
+import { useForm } from 'react-hook-form'
 
-const initialState: LoginState = { error: "", success: false };
+import { loginAction, type LoginState } from '@/actions/auth.action'
+import { toast } from '@/lib/toast'
+import { useSmartRouter } from '@/lib/useSmartRouter'
+import { LoginInput, loginSchema } from '@/lib/validation'
+import { useUiStore } from '@/zustand/loader.store'
 
-export default function LoginPage() {
-  const router = useRouter();
-  const [state, formAction, isPending] = useActionState(loginAction, initialState);
-  const [showPassword, setShowPassword] = useState(false);
+import Button from '../ui/Button'
+import Input from '../ui/FloatingInput'
+import FloatingInput from '../ui/FloatingInput'
 
-  useEffect(() => {
-    if (state?.success) router.push("/dashboard");
-  }, [state?.success, router]);
+export default function LoginForm() {
+  const [serverError, setServerError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
+  const [pending, startTransition] = useTransition()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+    mode: 'onBlur',
+  })
+  const showLoader = useUiStore((s) => s.showLoader)
+  const hideLoader = useUiStore((s) => s.hideLoader)
+  const router = useSmartRouter()
+
+  const onSubmit = (data: LoginInput) => {
+    showLoader('Signing you in…')
+
+    startTransition(async () => {
+      try {
+        const res = await toast.promise(loginAction(data), {
+          loading: { message: 'Checking credentials…' },
+          success: { message: 'Signed in!' },
+          error: { message: 'Login failed.' },
+        })
+
+        if (!res.success) {
+          toast.error(res.error || 'Invalid credentials')
+          return
+        }
+
+        router.push('/agency')
+      } finally {
+        hideLoader()
+      }
+    })
+  }
   return (
     <div className="grid min-h-screen grid-cols-1 md:grid-cols-2">
       <div className="hidden md:flex flex-col justify-center px-16 relative overflow-hidden">
@@ -32,7 +69,8 @@ export default function LoginPage() {
         >
           <h1 className="text-4xl font-bold mb-6">Build. Deploy. Scale.</h1>
           <p className="text-muted-foreground text-lg">
-            Create multi-page websites in minutes and deploy instantly. Your platform for modern web creation.
+            Create multi-page websites in minutes and deploy instantly. Your platform for modern web
+            creation.
           </p>
         </motion.div>
       </div>
@@ -47,43 +85,43 @@ export default function LoginPage() {
           <h2 className="text-3xl font-semibold tracking-tight mb-2">Welcome back</h2>
           <p className="text-sm text-muted-foreground mb-6">Sign in to your workspace</p>
 
-          <form action={formAction} className="space-y-6">
-            <Input name="email" label="Email" type="email" required />
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <FloatingInput
+              label="Email"
+              type="email"
+              {...register('email')}
+              error={errors.email?.message}
+            />
 
-            <div className="relative">
-              <Input
-                name="password"
-                label="Password"
-                type={showPassword ? "text" : "password"}
-                required
-              />
+            <FloatingInput
+              label="Password"
+              type={showPassword ? 'text' : 'password'}
+              {...register('password')}
+              error={errors.password?.message}
+              rightSlot={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((p) => !p)}
+                  className="text-muted-foreground hover:text-foreground transition"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              }
+            />
 
-              <button
-                type="button"
-                onClick={() => setShowPassword((p) => !p)}
-                className="absolute right-4 top-3 text-muted-foreground hover:text-foreground transition"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
+            {serverError ? <p className="text-sm text-destructive">{serverError}</p> : null}
 
-            {state?.error && (
-              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-destructive">
-                {state.error}
-              </motion.p>
-            )}
-
-            <Button type="submit" isLoading={isPending} fullWidth>
+            <Button type="submit" isLoading={pending} fullWidth>
               Sign In
             </Button>
           </form>
 
           <p className="text-sm text-muted-foreground mt-6 text-center">
-            Don’t have an account?{" "}
+            Don’t have an account?{' '}
             <span className="text-primary hover:underline cursor-pointer">Sign up</span>
           </p>
         </motion.div>
       </div>
     </div>
-  );
+  )
 }

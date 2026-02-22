@@ -1,27 +1,24 @@
-"use server";
+'use server'
 
-export type LoginState = {
-  error?: string;
-  success?: boolean;
-};
+import { LoginInput, loginSchema } from '@/lib/validation'
 
-export async function loginAction(
-  prevState: LoginState,
-  formData: FormData
-): Promise<LoginState> {
-  const email = formData.get("email");
-  const password = formData.get("password");
+export type LoginState = { success: true } | { success: false; error: string }
 
-  if (!email || !password) {
-    return { error: "All fields are required" };
+export async function loginAction(data: LoginInput): Promise<LoginState> {
+  const parsed = loginSchema.safeParse(data)
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? 'Invalid input' }
   }
 
-  // Simulate DB delay
-  await new Promise((res) => setTimeout(res, 1500));
+  const { email, password } = parsed.data
 
-  if (email !== "admin@test.com" || password !== "123456") {
-    return { error: "Invalid credentials" };
-  }
+  // TODO: call ASP.NET API, verify user, set cookies/session etc.
+  // example:
+  // const r = await fetch(...)
 
-  return { success: true };
+  // if (email !== 'admin@test.com' || password !== '123456') {
+  //   return { success: false, error: 'Invalid credentials' }
+  // }
+
+  return { success: true }
 }
