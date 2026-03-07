@@ -3,8 +3,6 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
-import Background from '@/components/global/Background'
-import { Header } from '@/components/global/Header'
 import GlobalLoader from '@/components/global/loader/GlobalLoader'
 import RouteLoader from '@/components/global/loader/RouteLoader'
 import Toaster from '@/components/global/Toaster'
@@ -37,7 +35,7 @@ export default function RootLayout({
             {/* subtle glow */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(99,102,241,0.12),transparent_40%)]" />
           </div>
-          <Header />
+          {/* <Header /> */}
           <main className="flex-1">{children}</main>
           {/* <Footer /> */}
         </div>

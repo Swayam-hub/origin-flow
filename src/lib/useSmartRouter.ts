@@ -8,15 +8,21 @@ export function useSmartRouter() {
   const router = useRouter()
   const start = useUiStore((s) => s.startRouteLoading)
 
+  const push = (href: string) => {
+    start()
+    router.push(href)
+  }
+
+  const replace = (href: string) => {
+    start()
+    router.replace(href)
+  }
+
   return {
-    ...router,
-    push: (href: string) => {
-      start()
-      router.push(href)
-    },
-    replace: (href: string) => {
-      start()
-      router.replace(href)
-    },
+    push,
+    replace,
+    back: router.back,
+    refresh: router.refresh,
+    prefetch: router.prefetch,
   }
 }

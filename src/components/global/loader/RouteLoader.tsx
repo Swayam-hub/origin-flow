@@ -31,16 +31,16 @@ export default function RouteLoader() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed left-0 top-0 z-[200] w-full"
+          className="fixed left-0 top-0 z-200 w-full"
         >
           <motion.div
             initial={{ width: '10%' }}
             animate={{ width: '90%' }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="h-[2px] bg-primary"
+            className="h-0.5 bg-primary"
           />
           {/* subtle glow */}
-          <div className="h-[2px] w-full bg-primary/10 blur-[6px]" />
+          <div className="h-0.5 w-full bg-primary/10 blur-[6px]" />
         </motion.div>
       )}
     </AnimatePresence>

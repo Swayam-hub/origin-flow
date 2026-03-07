@@ -18,7 +18,7 @@ export default function GlobalLoader() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
-          className="fixed inset-0 z-[999] grid place-items-center bg-black/40 backdrop-blur-sm"
+          className="fixed inset-0 z-999 grid place-items-center bg-black/40 backdrop-blur-sm"
           aria-live="polite"
           aria-busy="true"
         >
@@ -28,7 +28,7 @@ export default function GlobalLoader() {
             exit={{ opacity: 0, y: 12, scale: 0.98 }}
             transition={{ type: 'spring', stiffness: 260, damping: 22 }}
             className="
-              relative w-[340px] max-w-[calc(100vw-2rem)]
+              relative w-85 max-w-[calc(100vw-2rem)]
               rounded-2xl border border-border
               bg-card/70 backdrop-blur-xl
               p-6 shadow-2xl

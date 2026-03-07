@@ -1,4 +1,4 @@
-import { type ToastType, useToastStore } from '@/zustand/toast.store'
+import { useToastStore } from '@/zustand/toast.store'
 
 type PromiseMessages<T> = {
   loading: { title?: string; message: string }

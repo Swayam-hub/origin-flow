@@ -3,22 +3,21 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { useActionState, useEffect, useState, useTransition } from 'react'
+import Link from 'next/link'
+import { useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { loginAction, type LoginState } from '@/actions/auth.action'
+import { loginAction } from '@/actions/auth.action'
 import { toast } from '@/lib/toast'
 import { useSmartRouter } from '@/lib/useSmartRouter'
 import { LoginInput, loginSchema } from '@/lib/validation'
 import { useUiStore } from '@/zustand/loader.store'
 
 import Button from '../ui/Button'
-import Input from '../ui/FloatingInput'
 import FloatingInput from '../ui/FloatingInput'
 
 export default function LoginForm() {
-  const [serverError, setServerError] = useState('')
+  // const [serverError, setServerError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
   const [pending, startTransition] = useTransition()
@@ -39,17 +38,13 @@ export default function LoginForm() {
 
     startTransition(async () => {
       try {
-        const res = await toast.promise(loginAction(data), {
-          loading: { message: 'Checking credentials…' },
-          success: { message: 'Signed in!' },
-          error: { message: 'Login failed.' },
-        })
+        const res = await loginAction(data)
 
         if (!res.success) {
           toast.error(res.error || 'Invalid credentials')
           return
         }
-
+        toast.success('Login Sucessfull!')
         router.push('/agency')
       } finally {
         hideLoader()
@@ -109,17 +104,20 @@ export default function LoginForm() {
               }
             />
 
-            {serverError ? <p className="text-sm text-destructive">{serverError}</p> : null}
+            {/* {serverError ? <p className="text-sm text-destructive">{serverError}</p> : null} */}
 
             <Button type="submit" isLoading={pending} fullWidth>
               Sign In
             </Button>
           </form>
 
-          <p className="text-sm text-muted-foreground mt-6 text-center">
+          <Link
+            className="text-sm text-muted-foreground mt-6 flex justify-center gap-1"
+            href="/agency/sign-up"
+          >
             Don’t have an account?{' '}
             <span className="text-primary hover:underline cursor-pointer">Sign up</span>
-          </p>
+          </Link>
         </motion.div>
       </div>
     </div>

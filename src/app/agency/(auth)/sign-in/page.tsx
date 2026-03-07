@@ -1,5 +1,3 @@
-import React from 'react'
-
 import LoginPage from '@/components/forms/LoginForm'
 
 const SignIn = () => {
